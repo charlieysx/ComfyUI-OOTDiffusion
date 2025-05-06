@@ -38,7 +38,7 @@ class OOTDiffusion:
 
         self.repo_root = root
 
-        VIT_PATH = f"openai/clip-vit-large-patch14"
+        VIT_PATH = Path(root) / "checkpoints" / "clip-vit-large-patch14"
         MODEL_PATH = Path(root) / "checkpoints" / "ootd"
         if model_type == "hd":
             UNET_PATH = MODEL_PATH / "ootd_hd" / "checkpoint-36000"
@@ -84,8 +84,8 @@ class OOTDiffusion:
                 torch_dtype=self.torch_dtype,
             ),
             torch_dtype=self.torch_dtype,
-            variant="fp16",
-            use_safetensors=True,
+            # variant="fp16",
+            use_safetensors=False,
             safety_checker=None,
             requires_safety_checker=False,
         ).to(self.device)

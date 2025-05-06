@@ -3,7 +3,6 @@ import warnings
 from pathlib import Path
 
 import numpy as np
-from huggingface_hub import snapshot_download
 from PIL import Image
 from torchvision.transforms.functional import to_pil_image, to_tensor
 
@@ -57,36 +56,6 @@ class LoadOOTDPipeline:
 
     def load(self, type, path):
         return (self.load_impl(type, path),)
-
-
-class LoadOOTDPipelineHub(LoadOOTDPipeline):
-    display_name = "Load OOTDiffusion from Hub🤗"
-
-    repo_id = "levihsu/OOTDiffusion"
-    repo_revision = "d33c517dc1b0718ea1136533e3720bb08fae641b"
-
-    @classmethod
-    def INPUT_TYPES(cls):
-        return {
-            "required": {
-                "type": (["Half body", "Full body"],),
-            }
-        }
-
-    def load(self, type):  # type: ignore
-        # DiffusionPipeline.from_pretrained doesn't support subfolder
-        # So we use snapshot_download to get local path first
-        path = snapshot_download(
-            self.repo_id,
-            revision=self.repo_revision,
-            resume_download=True,
-        )
-        if os.path.exists("models/OOTDiffusion"):
-            warnings.warn(
-                "You've downloaded models with huggingface_hub cache. "
-                "Consider removing 'models/OOTDiffusion' directory to free your disk space."
-            )
-        return (LoadOOTDPipeline.load_impl(type, path),)
 
 
 class OOTDGenerate:
@@ -191,7 +160,6 @@ class OOTDGenerate:
 
 _export_classes = [
     LoadOOTDPipeline,
-    LoadOOTDPipelineHub,
     OOTDGenerate,
 ]
 
